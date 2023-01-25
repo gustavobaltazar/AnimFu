@@ -1,0 +1,24 @@
+{
+  "name": "animfu",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": [],
+  "author": "gustavobaltazar",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^4.9.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "zod": "^3.20.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.16",
+    "prisma": "^4.9.0",
+    "tsx": "^3.12.2"
+  }
+}
