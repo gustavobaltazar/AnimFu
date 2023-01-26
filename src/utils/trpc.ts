@@ -58,11 +58,7 @@ export const isAdminMiddleware = t.middleware(async ({ ctx, next }) => {
     if(!isAdmin) {
         throw new TRPCError({ code: "FORBIDDEN" })
     }
-    return next({
-        ctx: {
-            
-        }
-    })
+    return next()
 })
 
 
