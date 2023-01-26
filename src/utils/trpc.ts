@@ -53,6 +53,18 @@ const isAuthenticatedMiddleware = t.middleware(async ({ctx, next}) => {
     });
 })
 
+export const isAdminMiddleware = t.middleware(async ({ ctx, next }) => { 
+    const isAdmin = ctx.session?.user.isAdmin === true;
+    if(!isAdmin) {
+        throw new TRPCError({ code: "FORBIDDEN" })
+    }
+    return next({
+        ctx: {
+            
+        }
+    })
+})
+
 
 export const router = t.router;
 
@@ -60,5 +72,7 @@ export const mergeRouters = t.mergeRouters;
 
 export const publicProcedure = t.procedure;
 
-export const privateProcedure = t.procedure.use(isAuthenticatedMiddleware);
+export const authenticatedProcedure = t.procedure.use(isAuthenticatedMiddleware);
 
+ export const adminProcedure = authenticatedProcedure.use(isAdminMiddleware);
+// export const adminProcedure = isAdminMiddleware.use(authenticatedProcedure);
