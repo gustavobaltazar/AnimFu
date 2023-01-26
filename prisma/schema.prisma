@@ -10,7 +10,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id    String     @id @default(cuid())
-  text  String
+model Anime {
+  id       String @id @default(cuid())
+  name     String
+  year     String
+  season   String
+  genre    String
+  score    Float
+  synopsis String
+
+  favoritedBy   User[]
+  character     Character[]
+  scoresByUsers AnimeScore[]
+}
+
+model Character {
+  id     String  @id @default(cuid())
+  name   String
+  // animeList Anime  @relation(fields: [animeId], references: [id])
+  // animeId String
+  animes Anime[]
+}
+
+model User {
+  id           String @id @default(cuid())
+  name         String
+  email        String @unique
+  age          Int
+  passwordHash String
+
+  favoriteAnimes Anime[]
+  session        Session[]
+  scoredAnimes   AnimeScore[]
+}
+
+model AnimeScore {
+  id      String @id @default(cuid())
+  animeId String
+  userId  String
+  score   Float
+  Anime   Anime  @relation(fields: [animeId], references: [id])
+  User    User   @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  sessionId String @id @default(cuid())
+  userId    String
+
+  user User @relation(fields: [userId], references: [id])
 }
