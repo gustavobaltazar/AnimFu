@@ -12,29 +12,43 @@ const animeScheme = z.object({
 });
 
 export const animeRouter = router({
-    createAnime: privateProcedure
+  createAnime: privateProcedure
     .input(animeScheme)
     .mutation(async ({ ctx, input }) => {
-        try {
-            const createAnime = await ctx.prisma.anime.create({
-                data: {
-                    name: input.name,
-                    year: input.year,
-                    season: input.season,
-                    genre: input.genre,
-                    score: input.score,
-                    synopsis: input.synopsis
-                },
-            })
-            return { createAnime };
-        } catch (error) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                cause: error,
-                message: "Failed to create anime!",
-            });
-        }
+      try {
+        const createAnime = await ctx.prisma.anime.create({
+          data: {
+            name: input.name,
+            year: input.year,
+            season: input.season,
+            genre: input.genre,
+            score: input.score,
+            synopsis: input.synopsis,
+          },
+        });
+        return { createAnime };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          cause: error,
+          message: "Failed to create anime!",
+        });
+      }
     }),
-    
-
-})
+  sortAnimeByRank: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const sortedAnimeListByRank = await ctx.prisma.anime.findMany({
+        orderBy: {
+          score: "desc",
+        },
+      });
+      return { sortedAnimeListByRank };
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        cause: error,
+        message: "Failed to sort anime listt!",
+      });
+    }
+  }),
+});
