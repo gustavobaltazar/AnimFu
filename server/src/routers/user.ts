@@ -9,6 +9,11 @@ const userScheme = z.object({
   password: z.string().min(12),
 });
 
+const loginScheme = z.object({
+  email: z.string().email(),
+  password: z.string().min(12),
+});
+
 export const userRouter = router({
   createUser: publicProcedure
     .input(userScheme)
@@ -31,4 +36,43 @@ export const userRouter = router({
         });
       }
     }),
+  
+  loginUser: publicProcedure
+    .input(loginScheme)
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session && ctx.session.user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Already logged in"
+        })
+      }
+
+      const user = await ctx.prisma.user.findFirst({
+        where: {
+          email: input.email
+        }
+      })
+      
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" })
+
+      const validPassword = input.password === user.passwordHash;
+
+      if (!validPassword) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" })
+
+      const newSession = await ctx.prisma.session.create({
+        data: {
+          userId: user.id,
+        },
+      });
+
+      const newSessionId = newSession.sessionId;
+
+      ctx.setSessionIdCookie(newSessionId)
+
+      return {
+        user
+      }
+
+    })
+  
 });

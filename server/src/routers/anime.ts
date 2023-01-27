@@ -80,6 +80,7 @@ export const animeRouter = router({
         character: true,
       },
     });
+    return { allAnimes }
   }),
   createCharacter: adminProcedure.input(animeCharacterRouteScheme).mutation(async ({ ctx, input }) => {
     function isCreateCharacter(

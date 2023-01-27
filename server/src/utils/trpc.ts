@@ -17,19 +17,19 @@ export const createContext = async ({
         res.cookie('sessionId', sessionId, { httpOnly: true })
     }
 
-    const sessionId = req.cookies.sessionId;
-    if (!sessionId) {
+    try {
+        const session = await prisma.session.findFirst({
+            where: { sessionId: req.cookies.sessionId },
+            include: {
+                user: true
+            }
+        })
+        console.log("Session: ", session)
+        
+        return { prisma, session, setSessionIdCookie };
+    } catch (error) {
         return { prisma, setSessionIdCookie };
     }
-
-    const session = await prisma.session.findFirst({
-        where: { sessionId },
-        include: {
-            user: true
-        }
-    })
-    
-    return { prisma, session, setSessionIdCookie };
 }
 
 type Context = inferAsyncReturnType<typeof createContext>;
@@ -42,6 +42,7 @@ const t = initTRPC.context<Context>().create({
 });
 
 const isAuthenticatedMiddleware = t.middleware(async ({ctx, next}) => {
+    console.log(ctx.session)
     if (!ctx.session) {
         throw new TRPCError({ code: "UNAUTHORIZED" })
     }
