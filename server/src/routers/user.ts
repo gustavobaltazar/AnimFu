@@ -24,7 +24,7 @@ export const userRouter = router({
             name: input.name,
             email: input.email,
             age: input.age,
-            passwordHash: input.password
+            passwordHash: input.password,
           },
         });
         return { createUser };
@@ -36,29 +36,31 @@ export const userRouter = router({
         });
       }
     }),
-  
+
   loginUser: publicProcedure
     .input(loginScheme)
     .mutation(async ({ ctx, input }) => {
       if (ctx.session && ctx.session.user) {
-        console.log("session on login", ctx.session)
+        console.log("session on login", ctx.session);
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Already logged in"
-        })
+          message: "Already logged in",
+        });
       }
 
       const user = await ctx.prisma.user.findFirst({
         where: {
-          email: input.email
-        }
-      })
-      
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" })
+          email: input.email,
+        },
+      });
+
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const validPassword = input.password === user.passwordHash;
 
-      if (!validPassword) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" })
+      if (!validPassword)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const newSession = await ctx.prisma.session.create({
         data: {
@@ -68,12 +70,11 @@ export const userRouter = router({
 
       const newSessionId = newSession.sessionId;
 
-      ctx.setSessionIdCookie(newSessionId)
+      ctx.setSessionIdCookie(newSessionId);
 
       return {
-        user
-      }
+        user,
+      };
+    }),
 
-    })
-  
 });
