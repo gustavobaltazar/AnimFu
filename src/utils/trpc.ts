@@ -4,7 +4,7 @@ import cors from 'cors'
 import * as trpcExpress from '@trpc/server/adapters/express';
 import superjson from 'superjson'
 import { initTRPC, TRPCError, inferAsyncReturnType } from '@trpc/server';
-import { User } from '@prisma/client';
+// import { User } from '@prisma/client';
 import { prisma } from './prisma'
 import axios, { AxiosError } from 'axios';
 
@@ -58,7 +58,7 @@ export const isAdminMiddleware = t.middleware(async ({ ctx, next }) => {
     if(!isAdmin) {
         throw new TRPCError({ code: "FORBIDDEN" })
     }
-    return next()
+    return next({ ctx })
 })
 
 

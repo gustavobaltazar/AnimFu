@@ -1,6 +1,7 @@
-import { privateProcedure, publicProcedure, router } from "../utils/trpc";
+import { authenticatedProcedure, publicProcedure, router } from "../utils/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+// import { prisma } from "../utils/prisma"
 
 const animeScheme = z.object({
   name: z.string(),
@@ -12,7 +13,7 @@ const animeScheme = z.object({
 });
 
 export const animeRouter = router({
-  createAnime: privateProcedure
+  createAnime: authenticatedProcedure
     .input(animeScheme)
     .mutation(async ({ ctx, input }) => {
       try {
@@ -51,4 +52,11 @@ export const animeRouter = router({
       });
     }
   }),
+  getAllAnimes: publicProcedure.query(async ({ ctx }) => {
+    const allAnimes = await ctx.prisma.anime.findMany({
+      include: {
+        character: true
+      }
+    })
+  })
 });
