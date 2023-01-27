@@ -41,6 +41,7 @@ export const userRouter = router({
     .input(loginScheme)
     .mutation(async ({ ctx, input }) => {
       if (ctx.session && ctx.session.user) {
+        console.log("session on login", ctx.session)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Already logged in"
