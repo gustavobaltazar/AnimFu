@@ -53,7 +53,7 @@ const isAuthenticatedMiddleware = t.middleware(async ({ctx, next}) => {
     });
 })
 
-export const isAdminMiddleware = t.middleware(async ({ ctx, next }) => { 
+const isAdminMiddleware = t.middleware(async ({ ctx, next }) => { 
     const isAdmin = ctx.session?.user.isAdmin === true;
     if(!isAdmin) {
         throw new TRPCError({ code: "FORBIDDEN" })
