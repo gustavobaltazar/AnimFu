@@ -1,5 +1,5 @@
 import express from 'express'
-import { z } from 'zod'
+import { date, z } from 'zod'
 import cors from 'cors'
 import * as trpcExpress from '@trpc/server/adapters/express';
 import superjson from 'superjson'
@@ -17,6 +17,10 @@ export const createContext = async ({
         res.cookie('sessionId', sessionId, { httpOnly: true })
     }
 
+    const deleteSessionIdCookie = (sessionId: string) => {
+        res.cookie('sessionId', sessionId, { maxAge: 0 })
+    }
+
     console.log("req.cookies:", req.cookies)
     
     try {
@@ -29,9 +33,9 @@ export const createContext = async ({
         })
         console.log("Session: ", session)
         
-        return { prisma, session, setSessionIdCookie };
+        return { prisma, session, setSessionIdCookie, deleteSessionIdCookie };
     } catch (error) {
-        return { prisma, setSessionIdCookie };
+        return { prisma, setSessionIdCookie, deleteSessionIdCookie };
     }
 }
 

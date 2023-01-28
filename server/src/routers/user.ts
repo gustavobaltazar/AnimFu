@@ -1,4 +1,4 @@
-import { publicProcedure, router } from "../utils/trpc";
+import { authenticatedProcedure, publicProcedure, router } from "../utils/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
@@ -76,5 +76,13 @@ export const userRouter = router({
         user,
       };
     }),
-
+  logoutUser: authenticatedProcedure.mutation(async ({ ctx }) => {
+    const session = await ctx.prisma.session.delete({
+      where: {
+        sessionId: ctx.session?.sessionId
+      },
+    });
+    ctx.deleteSessionIdCookie(session.sessionId)
+    return { message: "successs" }
+  }),
 });
