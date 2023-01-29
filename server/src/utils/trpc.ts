@@ -18,7 +18,7 @@ export const createContext = async ({
     }
 
     const deleteSessionIdCookie = (sessionId: string) => {
-        res.cookie('sessionId', sessionId, { maxAge: 0 })
+        res.clearCookie('sessionId')
     }
 
     console.log("req.cookies:", req.cookies)

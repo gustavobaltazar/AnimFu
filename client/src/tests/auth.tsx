@@ -10,10 +10,11 @@ export default function AuthPage() {
   const [age, setAge] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+
   const handleLogout = async () => {
-    logoutUser.mutate()
-  }
+    logoutUser.mutate();
+  };
+
   return (
     <div>
       <h1>Auth</h1>
