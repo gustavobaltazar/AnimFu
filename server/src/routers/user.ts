@@ -79,10 +79,21 @@ export const userRouter = router({
   logoutUser: authenticatedProcedure.mutation(async ({ ctx }) => {
     const session = await ctx.prisma.session.delete({
       where: {
-        sessionId: ctx.session?.sessionId
+        sessionId: ctx.session?.sessionId,
       },
     });
-    ctx.deleteSessionIdCookie(session.sessionId)
-    return { message: "successs" }
+    ctx.deleteSessionIdCookie(session.sessionId);
+    return { message: "successs" };
+  }),
+  getAnimeScored: authenticatedProcedure.query(async ({ ctx }) => {
+    const scoredAnimes = await ctx.prisma.animeScore.findMany({
+      where: {
+        userId: ctx.user.id,
+      },
+      include: {
+        Anime: true,
+      },
+    });
+    return { scoredAnimes };
   }),
 });
