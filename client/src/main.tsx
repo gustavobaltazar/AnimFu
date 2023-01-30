@@ -5,6 +5,7 @@ import "./index.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 import AuthPage from "./tests/auth";
 import { Login } from "./pages/Login";
+import { Register } from "./pages/Register";
 
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -12,7 +13,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
       {/* <App />
       <AuthPage /> */}
-      <Login />
+      {/* <Login /> */}
+      <Register />
     </QueryClientProvider>
   </React.StrictMode>
 );
