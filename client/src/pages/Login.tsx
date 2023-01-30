@@ -5,6 +5,8 @@ import { api } from "../utils/trpc";
 export function Login() {
   const loginUser = useMutation(["loginUser"], api.user.loginUser.mutate);
   const logoutUser = useMutation(["logoutUser"], api.user.logoutUser.mutate);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogout = async () => {
     logoutUser.mutate();
@@ -13,7 +15,13 @@ export function Login() {
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
-        <form className="space-y-6" action="#">
+        <form className="space-y-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            loginUser.mutate({ email, password });
+          }}
+        >
+
           <h5 className="text-xl font-medium text-gray-900 dark:text-white text-center">
             Login
           </h5>
@@ -24,9 +32,12 @@ export function Login() {
             >
               Your email
             </label>
+
             <input
               type="email"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               id="email"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               placeholder="name@company.com"
@@ -45,6 +56,8 @@ export function Login() {
               name="password"
               id="password"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               required
             />
@@ -79,6 +92,13 @@ export function Login() {
             className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             Login
+          </button>
+          <button
+            type="submit"
+            className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            onClick={handleLogout}
+          >
+            Logout
           </button>
           <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
             Not registered?{" "}
