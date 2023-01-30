@@ -14,6 +14,10 @@ const loginScheme = z.object({
   password: z.string().min(12),
 });
 
+const addFavoriteAnimeScheme = z.object({
+  animeId: z.string(),
+});
+
 export const userRouter = router({
   createUser: publicProcedure
     .input(userScheme)
@@ -44,7 +48,7 @@ export const userRouter = router({
         console.log("session on login", ctx.session);
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Already logged in",
+          message: "Already logged in!",
         });
       }
 
@@ -55,12 +59,12 @@ export const userRouter = router({
       });
 
       if (!user)
-        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found!" });
 
       const validPassword = input.password === user.passwordHash;
 
       if (!validPassword)
-        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found!" });
 
       const newSession = await ctx.prisma.session.create({
         data: {
@@ -83,7 +87,7 @@ export const userRouter = router({
       },
     });
     ctx.deleteSessionIdCookie(session.sessionId);
-    return { message: "successs" };
+    return { message: "successs!" };
   }),
   getAnimeScored: authenticatedProcedure.query(async ({ ctx }) => {
     const scoredAnimes = await ctx.prisma.animeScore.findMany({
@@ -96,4 +100,31 @@ export const userRouter = router({
     });
     return { scoredAnimes };
   }),
+  addFavoriteAnime: authenticatedProcedure
+    .input(addFavoriteAnimeScheme)
+    .mutation(async ({ ctx, input }) => {
+     try {
+       const user = await prisma?.user.update({
+         where: {
+           id: ctx.user.id,
+         },
+         data: {
+           favoriteAnimes: {
+             connect: {
+               id: input.animeId,
+             },
+           },
+         },
+         include: {
+           favoriteAnimes: true,
+         },
+       });
+     } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          cause: error,
+          message: "Cannot add favorite anime!"
+        })
+     }
+    }),
 });
