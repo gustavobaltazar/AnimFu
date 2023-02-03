@@ -127,4 +127,10 @@ export const userRouter = router({
         })
      }
     }),
+    userProfile: authenticatedProcedure.query(async ({ ctx }) => {
+        console.log(ctx.session?.sessionId)
+        return{
+          user: ctx.user
+        }
+    })
 });
