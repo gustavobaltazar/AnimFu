@@ -22,13 +22,13 @@ model Anime {
   favoritedBy   User[]
   character     Character[]
   scoresByUsers AnimeScore[]
+  ReviewAnime   AnimeReview[]
 }
 
 model Character {
-  id     String  @id @default(cuid())
-  name   String
-  // animeList Anime  @relation(fields: [animeId], references: [id])
-  // animeId String
+  id   String @id @default(cuid())
+  name String
+
   animes Anime[]
 }
 
@@ -43,6 +43,7 @@ model User {
   favoriteAnimes Anime[]
   session        Session[]
   scoredAnimes   AnimeScore[]
+  ReviewAnime    AnimeReview[]
 }
 
 model AnimeScore {
@@ -50,8 +51,19 @@ model AnimeScore {
   animeId String
   userId  String
   score   Float
-  Anime   Anime  @relation(fields: [animeId], references: [id])
-  User    User   @relation(fields: [userId], references: [id])
+
+  anime Anime @relation(fields: [animeId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+}
+
+model AnimeReview {
+  id      String @id @default(cuid())
+  content String
+  animeId String
+  userId  String
+
+  anime Anime @relation(fields: [animeId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
 }
 
 model Session {

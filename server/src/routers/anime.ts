@@ -17,6 +17,11 @@ const animeScheme = z.object({
   synopsis: z.string().max(500),
 });
 
+const animeReviewScheme = z.object({
+  content: z.string(),
+  animeId: z.string(),
+});
+
 const createAnimeCharacterScheme = z.object({
   characterName: z.string(),
   animeId: z.string(),
@@ -80,57 +85,71 @@ export const animeRouter = router({
         character: true,
       },
     });
-    return { allAnimes }
+    return { allAnimes };
   }),
-  createCharacter: adminProcedure.input(animeCharacterRouteScheme).mutation(async ({ ctx, input }) => {
-    function isCreateCharacter(
-      input: AnimeCharacterRoute
-    ): input is CreateCharacter {
-      return "characterName" in input;
-    }
+  createCharacter: adminProcedure
+    .input(animeCharacterRouteScheme)
+    .mutation(async ({ ctx, input }) => {
+      function isCreateCharacter(
+        input: AnimeCharacterRoute
+      ): input is CreateCharacter {
+        return "characterName" in input;
+      }
 
-    try {
-      let anime;
-      if (isCreateCharacter(input)) {
-        anime = await ctx.prisma.anime.update({
-          where: {
-            id: input.animeId,
-          },
-          data: {
-            character: {
-              create: {
-                name: input.characterName,
+      try {
+        let anime;
+        if (isCreateCharacter(input)) {
+          anime = await ctx.prisma.anime.update({
+            where: {
+              id: input.animeId,
+            },
+            data: {
+              character: {
+                create: {
+                  name: input.characterName,
+                },
               },
             },
-          },
-          include: {
-            character: true,
-          },
-        });
-      } else {
-        anime = await ctx.prisma.anime.update({
-          where: {
-            id: input.animeId,
-          },
-          data: {
-            character: {
-              connect: {
-                id: input.characterId,
+            include: {
+              character: true,
+            },
+          });
+        } else {
+          anime = await ctx.prisma.anime.update({
+            where: {
+              id: input.animeId,
+            },
+            data: {
+              character: {
+                connect: {
+                  id: input.characterId,
+                },
               },
             },
-          },
-          include: {
-            character: true,
-          },
+            include: {
+              character: true,
+            },
+          });
+        }
+        return { anime };
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          cause: error,
+          message: "Failed to create character!",
         });
       }
-      return { anime };
-    } catch (error) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        cause: error,
-        message: "Failed to create character!",
+    }),
+  createAnimeReviews: authenticatedProcedure
+    .input(animeReviewScheme)
+    .mutation(async ({ ctx, input }) => {
+      const createdReview = await ctx.prisma.animeReview.create({
+        data: {
+          content: input.content,
+          animeId: input.animeId,
+          userId: ctx.user.id,
+        },
       });
-    }
-  }),
+      return { createdReview };
+    }),
 });
