@@ -152,4 +152,12 @@ export const animeRouter = router({
       });
       return { createdReview };
     }),
+  getAllAnimeReviews: publicProcedure.query(async ({ ctx }) => {
+    const allReviews = await ctx.prisma.animeReview.findMany({
+      include: {
+        anime: true,
+        user: true,
+      },
+    });
+  }),
 });
