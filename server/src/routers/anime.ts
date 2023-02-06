@@ -143,21 +143,34 @@ export const animeRouter = router({
   createAnimeReviews: authenticatedProcedure
     .input(animeReviewScheme)
     .mutation(async ({ ctx, input }) => {
-      const createdReview = await ctx.prisma.animeReview.create({
-        data: {
-          content: input.content,
-          animeId: input.animeId,
-          userId: ctx.user.id,
+      try {
+        const createdReview = await ctx.prisma.animeReview.create({
+          data: {
+            content: input.content,
+            animeId: input.animeId,
+            userId: ctx.user.id,
+          },
+        });
+        return { createdReview };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          cause: error,
+          message: "Cannot create review!",
+    getAllAnimeReviews: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const allReviews = await ctx.prisma.animeReview.findMany({
+        include: {
+          anime: true,
+          user: true,
         },
       });
-      return { createdReview };
-    }),
-  getAllAnimeReviews: publicProcedure.query(async ({ ctx }) => {
-    const allReviews = await ctx.prisma.animeReview.findMany({
-      include: {
-        anime: true,
-        user: true,
-      },
-    });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        cause: error,
+        message: "Cannot get reviews!",
+      });
+    }
   }),
 });
