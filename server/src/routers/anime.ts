@@ -157,7 +157,10 @@ export const animeRouter = router({
           code: "INTERNAL_SERVER_ERROR",
           cause: error,
           message: "Cannot create review!",
-    getAllAnimeReviews: publicProcedure.query(async ({ ctx }) => {
+        })
+      }
+    }),
+  getAllAnimeReviews: publicProcedure.query(async ({ ctx }) => {
     try {
       const allReviews = await ctx.prisma.animeReview.findMany({
         include: {

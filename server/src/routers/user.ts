@@ -77,7 +77,7 @@ export const userRouter = router({
       ctx.setSessionIdCookie(newSessionId);
 
       return {
-        user,
+        user
       };
     }),
   logoutUser: authenticatedProcedure.mutation(async ({ ctx }) => {
@@ -95,7 +95,7 @@ export const userRouter = router({
         userId: ctx.user.id,
       },
       include: {
-        Anime: true,
+        anime: true
       },
     });
     return { scoredAnimes };
@@ -103,34 +103,34 @@ export const userRouter = router({
   addFavoriteAnime: authenticatedProcedure
     .input(addFavoriteAnimeScheme)
     .mutation(async ({ ctx, input }) => {
-     try {
-       const user = await prisma?.user.update({
-         where: {
-           id: ctx.user.id,
-         },
-         data: {
-           favoriteAnimes: {
-             connect: {
-               id: input.animeId,
-             },
-           },
-         },
-         include: {
-           favoriteAnimes: true,
-         },
-       });
-     } catch (error) {
+      try {
+        const user = await prisma?.user.update({
+          where: {
+            id: ctx.user.id,
+          },
+          data: {
+            favoriteAnimes: {
+              connect: {
+                id: input.animeId,
+              },
+            },
+          },
+          include: {
+            favoriteAnimes: true,
+          },
+        });
+      } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           cause: error,
           message: "Cannot add favorite anime!"
         })
-     }
+      }
     }),
-    userProfile: authenticatedProcedure.query(async ({ ctx }) => {
-        console.log(ctx.session?.sessionId)
-        return{
-          user: ctx.user
-        }
-    })
+  userProfile: authenticatedProcedure.query(async ({ ctx }) => {
+    console.log(ctx.session?.sessionId)
+    return {
+      user: ctx.user
+    }
+  })
 });
